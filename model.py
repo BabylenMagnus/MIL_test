@@ -51,3 +51,32 @@ class Decoder(nn.Module):
         x = self.conv_block(x)
 
         return x
+
+
+class ClassificationModel(nn.Module):
+    def __init__(self, num_classes=100):
+        super(ClassificationModel, self).__init__()
+
+        self.conv_block = nn.Sequential(
+            nn.Conv2d(3, 8, kernel_size=(5, 5), stride=(3, 3)),
+            nn.BatchNorm2d(8),
+            nn.ReLU(),
+            nn.Dropout2d(),
+            nn.Conv2d(8, 16, kernel_size=(3, 3), padding=1),
+            nn.ReLU(),
+            nn.Dropout2d()
+        )
+
+        self.fc_block = nn.Sequential(
+            nn.Linear(1600, 1024),
+            nn.ReLU(),
+            nn.Dropout(),
+            nn.Linear(1024, num_classes),
+            nn.LogSoftmax(1)
+        )
+
+    def forward(self, x):
+        x = self.conv_block(x)
+        x = x.reshape(-1, 1600)
+        x = self.fc_block(x)
+        return x
