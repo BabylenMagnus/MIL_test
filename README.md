@@ -31,7 +31,7 @@ class Cifar100(Dataset):
 
 ## Модель автоенкодера
 Сделана простая модель [автоенкодера](model.py). Тренировал 250 эпох, до такого результата:
-![[ae_result.png]]
+![ae_result.png](images/ae_result.png)
 
 ## Модель Классификатора
 Модель классифицирует объекты после енкодера. 
@@ -40,7 +40,7 @@ class Cifar100(Dataset):
 --- | --- | ---
 |0.2429|0.3141 |0.4395|
 
-![[two-dimensional.png]]
+![ae_result.png](images/two-dimensional.png)
 
 ## 
 
