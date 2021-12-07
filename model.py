@@ -59,24 +59,24 @@ class ClassificationModel(nn.Module):
 
         self.conv_block = nn.Sequential(
             nn.Conv2d(3, 8, kernel_size=(5, 5), stride=(3, 3)),
-            nn.BatchNorm2d(8),
+            nn.Dropout2d(p=0.3),
             nn.ReLU(),
-            nn.Dropout2d(),
             nn.Conv2d(8, 16, kernel_size=(3, 3), padding=1),
-            nn.ReLU(),
-            nn.Dropout2d()
+            nn.ReLU()
         )
 
         self.fc_block = nn.Sequential(
             nn.Linear(1600, 1024),
             nn.ReLU(),
-            nn.Dropout(),
-            nn.Linear(1024, num_classes),
-            nn.LogSoftmax(1)
+            nn.Dropout2d(p=0.2),
+            nn.Linear(1024, num_classes)
         )
+
+        self.final = nn.LogSoftmax(1)
 
     def forward(self, x):
         x = self.conv_block(x)
         x = x.reshape(-1, 1600)
         x = self.fc_block(x)
+        x = self.final(x)
         return x

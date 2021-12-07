@@ -5,7 +5,7 @@ from torch.utils.data import Dataset
 
 
 class Cifar100(Dataset):
-    def __init__(self, root='CIFAR100/TRAIN', transforms=None):
+    def __init__(self, root='CIFAR100/TRAIN'):
         self.root = root
         self.list_of_data = []
 
@@ -26,6 +26,6 @@ class Cifar100(Dataset):
         img = cv2.imread(os.path.join(self.root, path))
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
-        img = img.transpose(-1, 0, 1)
+        img = img.transpose(-1, 0, 1)  # from numpy to torch image
 
         return img, label
