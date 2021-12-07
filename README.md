@@ -43,6 +43,3 @@ class Cifar100(Dataset):
 ![ae_result.png](images/two-dimensional.png)
 
 ## 
-
-прошу посмотреть в ветку mnist, там более качественное решение
-
