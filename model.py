@@ -1,4 +1,5 @@
 import torch.nn as nn
+import torch
 
 
 def encoder_layer(n_channel):
@@ -80,3 +81,74 @@ class ClassificationModel(nn.Module):
         x = self.fc_block(x)
         x = self.final(x)
         return x
+
+
+def mnist_block(in_ch, out_ch):
+
+    return nn.Sequential(
+        nn.Conv2d(in_ch, out_ch, kernel_size=(3, 3), padding=1),
+        nn.ReLU(),
+        nn.BatchNorm2d(out_ch),
+        nn.Conv2d(out_ch, out_ch, kernel_size=(3, 3), padding=1),
+        nn.ReLU(),
+        nn.BatchNorm2d(out_ch)
+    )
+
+
+class MnistModel(nn.Module):
+    def __init__(self):
+        super(MnistModel, self).__init__()
+
+        self.max_pool = nn.MaxPool2d(kernel_size=(2, 2))
+
+        self.block1 = mnist_block(1, 32)
+        self.block2 = mnist_block(32, 64)
+        self.block3 = mnist_block(64, 128)
+        self.block4 = mnist_block(128, 64)
+        self.block5 = mnist_block(64, 32)
+
+        self.conv_t1 = nn.ConvTranspose2d(128, 64, kernel_size=(2, 2), stride=(2, 2))
+        self.conv_t2 = nn.ConvTranspose2d(64, 32, kernel_size=(2, 2), stride=(2, 2))
+
+        self.final = nn.Sequential(
+            nn.Conv2d(32, 1, kernel_size=(1, 1)),
+            nn.Sigmoid()
+        )
+
+    def forward(self, x):
+        x_1 = self.block1(x)
+        x = self.max_pool(x_1)
+        x_2 = self.block2(x)
+        x = self.max_pool(x_2)
+        x = self.block3(x)
+
+        x = self.conv_t1(x)
+        x = torch.cat((x_2, x), dim=1)
+        x = self.block4(x)
+        x = self.conv_t2(x)
+        x = torch.cat((x_1, x), dim=1)
+        x = self.block5(x)
+        x = self.final(x)
+
+        return x
+
+
+class ClassificationMnist(nn.Module):
+    def __init__(self):
+        super(ClassificationMnist, self).__init__()
+
+        self.conv = nn.Sequential(
+            mnist_block(128, 256),
+            mnist_block(256, 128),
+            mnist_block(128, 128)  # here 128, 7, 7
+        )
+
+        self.fc = nn.Linear(6272, 10)
+
+        self.final = nn.Softmax(dim=1)
+
+    def forward(self, x):
+        x = self.conv(x)
+        x = x.reshape(-1, 6272)
+        x = self.fc(x)
+        return self.final(x)

@@ -2,3 +2,5 @@ CIFAR100
 .idea/*
 *.model
 .ipynb_checkpoints
+.obsidian
+*.gz
