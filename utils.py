@@ -94,7 +94,7 @@ def train_classification(
             optimizer.step()
 
             total_loss += loss.item()
-            total_accuracy += sum(output.argmax(1) == classes).item()
+            total_accuracy += sum(output.argmax(1) == classes).item() / len(classes)
 
             if not batch_idx % noti_rate:
                 print(
@@ -120,7 +120,7 @@ def train_classification(
 
                 output = classification_model(model(data))
 
-                test_accuracy += sum(output.argmax(1) == classes).item()
+                test_accuracy += sum(output.argmax(1) == classes).item() / len(classes)
 
         test_accuracy /= len(test_loader)
         test_accuracies.append(test_accuracy)
